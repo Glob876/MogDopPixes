@@ -53,6 +53,11 @@ try {
     );
     assert.equal(geometry.overflow, false, `page overflow at ${width}`);
     if (width <= 1000) {
+      await page.waitForFunction(() => {
+        const content = document.querySelector(".mega-inner");
+        const arrow = document.querySelector(".menu-scroll-arrow.next");
+        return content.scrollWidth > content.clientWidth + 2 && !arrow.hidden;
+      });
       await page.locator(".menu-scroll-arrow.next").click();
       await page.waitForFunction(
         () => document.querySelector(".mega-inner").scrollLeft > 20,
