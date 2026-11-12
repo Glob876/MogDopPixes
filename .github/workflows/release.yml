@@ -37,9 +37,14 @@ jobs:
         run: npm run pack:linux
       - if: runner.os == 'Windows'
         run: npm run pack:windows
+      - if: runner.os == 'Linux'
+        run: xvfb-run -a node tests/electron-check.mjs
+      - if: runner.os == 'Windows'
+        run: node tests/electron-check.mjs
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tag }}
+          draft: true
           files: |
             release/*.AppImage
             release/*.tar.gz
