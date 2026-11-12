@@ -1,0 +1,89 @@
+{
+  "name": "mogdoppixes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Пиксельный редактор со слоями и покадровой анимацией",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "npm run build:core && tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "desktop": "npm run build:ui && electron .",
+    "desktop:dev": "electron . --dev",
+    "build:core": "node scripts/build-core.mjs",
+    "build:ui": "tsc --noEmit && vite build",
+    "test": "tsx --test tests/*.test.ts",
+    "pack:linux": "electron-builder --linux AppImage tar.gz --x64",
+    "pack:windows": "electron-builder --win nsis portable --x64"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "electron": "^45.3.1",
+    "electron-builder": "^26.18.0",
+    "prettier": "^3.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2"
+  },
+  "dependencies": {
+    "gifenc": "^1.0.3",
+    "gifuct-js": "^2.1.2"
+  },
+  "build": {
+    "appId": "ru.mogdopteam.pixes",
+    "productName": "MogDopPixes",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "linux": {
+      "category": "Graphics",
+      "executableName": "mogdoppixes",
+      "icon": "public/icon.png",
+      "artifactName": "MogDopPixes-${version}-linux-${arch}.${ext}",
+      "desktop": {
+        "entry": {
+          "StartupWMClass": "mogdoppixes",
+          "Name": "MogDopPixes"
+        }
+      }
+    },
+    "win": {
+      "icon": "public/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "MogDopPixes-${version}-windows-${arch}-setup.${ext}"
+    },
+    "publish": null,
+    "portable": {
+      "artifactName": "MogDopPixes-${version}-windows-${arch}-portable.${ext}"
+    },
+    "extraFiles": [
+      {
+        "from": "LICENSE",
+        "to": "LICENSE-MogDopPixes.txt"
+      },
+      {
+        "from": "THIRD_PARTY_NOTICES.md",
+        "to": "THIRD_PARTY_NOTICES.md"
+      }
+    ]
+  },
+  "author": "Glob876",
+  "homepage": "https://mogdopteam.ru/pixes",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Glob876/MogDopPixes.git"
+  }
+}

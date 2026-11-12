@@ -1,0 +1,47 @@
+name: Build release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag, for example v0.1.0
+        required: true
+permissions:
+  contents: write
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      CARGO_BUILD_JOBS: 1
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - run: cargo install wasm-pack --locked --version 0.15.1
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: cargo test --locked
+      - if: runner.os == 'Linux'
+        run: npm run pack:linux
+      - if: runner.os == 'Windows'
+        run: npm run pack:windows
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: |
+            release/*.AppImage
+            release/*.tar.gz
+            release/*.exe
+          fail_on_unmatched_files: false
